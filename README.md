@@ -47,7 +47,35 @@ You can download the latest version of Flood Tuber from:
 2.  Extract the contents.
 3.  Copy the `flood-tuber.dll` into your OBS plugins folder (usually `C:\Program Files\obs-studio\obs-plugins\64bit`).
 4.  Copy the `flood-tuber` folder from the `data/obs-plugins` folder to the OBS data directory (usually `C:\Program Files\obs-studio\data\obs-plugins\flood-tuber`).
-5.  Restart OBS Studio.
+ 5.  Restart OBS Studio.
+
+### macOS
+
+#### Building from source
+
+**Prerequisites:** OBS Studio (Homebrew), CMake, Git, and Xcode Command Line Tools.
+
+```bash
+# Install dependencies
+brew install cmake obs-studio
+```
+
+**Build and install:**
+
+```bash
+git clone https://github.com/justflood/flood-tuber.git
+cd flood-tuber
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+sudo cmake --install build --prefix /usr/local
+```
+
+#### Manual installation (portable)
+
+1. Build as shown above.
+2. Copy `build/flood-tuber.so` to `~/Library/Application Support/obs-studio/plugins/flood-tuber/bin/`
+3. Copy the `data/` directory contents to `~/Library/Application Support/obs-studio/plugins/flood-tuber/data/`
+4. Restart OBS Studio.
 
 ### Linux
 
