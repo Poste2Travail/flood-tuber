@@ -10,7 +10,7 @@ if(NOT DEFINED OBS_PLUGIN_DESTINATION)
     elseif(APPLE)
         set(OBS_PLUGIN_DESTINATION "obs-plugins")
     else()
-        set(OBS_PLUGIN_DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/obs-plugins")
+        set(OBS_PLUGIN_DESTINATION "${CMAKE_INSTALL_LIBDIR}/obs-plugins")
     endif()
 endif()
 if(NOT DEFINED OBS_DATA_DESTINATION)
@@ -19,17 +19,21 @@ if(NOT DEFINED OBS_DATA_DESTINATION)
     elseif(APPLE)
         set(OBS_DATA_DESTINATION "data/obs-plugins")
     else()
-        set(OBS_DATA_DESTINATION "${CMAKE_INSTALL_FULL_DATAROOTDIR}/obs/obs-plugins")
+        set(OBS_DATA_DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/obs/obs-plugins")
     endif()
 endif()
 
 # 1. Plugin Definition
 add_library(flood-tuber MODULE)
-set_target_properties(flood-tuber PROPERTIES
-    PREFIX ""
-    FOLDER plugins
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/obs-plugins"
-)
+if(COMMAND set_target_properties_obs)
+    set_target_properties_obs(flood-tuber PROPERTIES FOLDER plugins PREFIX "")
+else()
+    set_target_properties(flood-tuber PROPERTIES
+        PREFIX ""
+        FOLDER plugins
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/obs-plugins"
+    )
+endif()
 
 # Version passed to C++ code via compile define (single source of truth)
 target_compile_definitions(flood-tuber PRIVATE

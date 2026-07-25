@@ -2,9 +2,9 @@
 #include "flood-tuber-props.h"
 #include <util/dstr.h>
 #include <math.h>
-#include <strings.h>
 
 #ifndef _WIN32
+#include <strings.h>
 #define _strcmpi strcasecmp
 #endif
 

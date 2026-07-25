@@ -9,22 +9,26 @@
 #include <windows.h>
 #include <shellapi.h>
 #else
-#include <stdlib.h>
-#include <stdio.h>
+#include <unistd.h>
 #endif
 
 static void open_in_system(const char *path_or_url)
 {
+	if (!path_or_url || !*path_or_url)
+		return;
+
 #ifdef _WIN32
 	ShellExecuteA(NULL, "open", path_or_url, NULL, NULL, SW_SHOWNORMAL);
 #elif __APPLE__
-	char cmd[2048];
-	snprintf(cmd, sizeof(cmd), "open '%s' &", path_or_url);
-	system(cmd);
+	if (fork() == 0) {
+		execlp("open", "open", path_or_url, (char *)NULL);
+		_exit(1);
+	}
 #else
-	char cmd[2048];
-	snprintf(cmd, sizeof(cmd), "xdg-open '%s' &", path_or_url);
-	system(cmd);
+	if (fork() == 0) {
+		execlp("xdg-open", "xdg-open", path_or_url, (char *)NULL);
+		_exit(1);
+	}
 #endif
 }
 
