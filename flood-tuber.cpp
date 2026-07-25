@@ -2,6 +2,11 @@
 #include "flood-tuber-props.h"
 #include <util/dstr.h>
 #include <math.h>
+#include <strings.h>
+
+#ifndef _WIN32
+#define _strcmpi strcasecmp
+#endif
 
 
 // Validate file headers to prevent crashes (e.g. renamed .txt files)
