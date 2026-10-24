@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.22...3.25)
 project(flood-tuber VERSION 1.1.0)
 
-find_package(libobs CONFIG REQUIRED)
+# Inside the OBS tree, OBS::libobs already exists. Standalone builds still
+# locate the installed SDK the way the Linux/macOS pull request expects.
+if(NOT TARGET OBS::libobs)
+    find_package(libobs CONFIG REQUIRED)
+endif()
 
 # Platform-agnostic install destinations (fallback if OBS cmake helpers unavailable)
 if(NOT DEFINED OBS_PLUGIN_DESTINATION)
