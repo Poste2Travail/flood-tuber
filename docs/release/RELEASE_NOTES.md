@@ -4,6 +4,7 @@
 * **[OBS 33 Support]** Updated property buttons to `obs_properties_add_button2` to resolve OBS 33 deprecation errors.
 * **[Modern Plugin Packaging]** Migrated installation directory to the official OBS Studio plugin path (`C:\ProgramData\obs-studio\plugins\flood-tuber`) so the plugin is no longer flagged as a "Legacy Plugin" in OBS 33 (#3).
 * **[Automatic Cleanup & Migration]** The installer now automatically cleans up legacy files from `C:\Program Files\obs-studio`, and existing scenes using built-in avatars automatically migrate to the new `ProgramData` path without breaking.
+* **[Localization]** Added French (`fr-FR`) localization for plugin settings and UI.
 
 > **📌 Version Compatibility Note:**
 > * **OBS Studio 33.0.0 and newer:** Use **v1.2.0** (this release).
@@ -14,7 +15,7 @@
 ## ❤️ Special Thanks & Credits
 Huge thanks to the community members who helped make this release happen:
 * **@IamS3pt1m** — For submitting PR #13 (`gs_image_file_ex` support for OBS 33) and reporting Issue #12.
-* **@Poste2Travail (Mardios Lambda)** — For the `obs_properties_add_button2` fixes, testing on OBS 33, and helping community members on Discord with workarounds!
+* **@Poste2Travail (Mardios Lambda)** — For the `obs_properties_add_button2` fixes, adding the French (`fr-FR`) localization, testing on OBS 33, and helping community members on Discord with workarounds!
 * **@shinyflvre** — For reporting the standard OBS `ProgramData` plugin folder structure (#3).
 
 ---
