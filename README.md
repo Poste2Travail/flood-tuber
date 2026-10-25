@@ -30,24 +30,27 @@ You can download the latest version of Flood Tuber from:
 *   **[Official OBS Resources Page](https://obsproject.com/forum/resources/flood-tuber-native-pngtuber-plugin.2336/)** 
 *   **[GitHub Releases](https://github.com/justflood/flood-tuber/releases/latest)** (Recommended)
 
+> **📌 OBS Studio Version Compatibility:**
+> *   **OBS Studio 33.0.0 and newer:** Download **v1.2.0+** (latest release).
+> *   **OBS Studio 32.x and older:** Please use **[v1.1.0](https://github.com/justflood/flood-tuber/releases/tag/v1.1.0)**.
+
 I offer two installation methods:
 
 ### Option 1: Installer (Recommended)
-1.  Download the `FloodTuber-Installer.exe`.
+1.  Download `FloodTuber-Installer-1.2.0.exe`.
 2.  Run the installer.
     > **⚠️ Note regarding "Windows protected your PC":**
     > Since this is an open-source project, I do not have an expensive code signing certificate. When you run the installer, Windows SmartScreen may show a warning saying "Unknown Publisher".
     > This is completely normal for open-source software. To proceed:
     > *   Click **"More Info"**
     > *   Click **"Run Anyway"**
-3.  Follow the setup wizard instructions.
+3.  Follow the setup wizard instructions. The installer automatically installs the plugin to the standard OBS plugin directory (`C:\ProgramData\obs-studio\plugins\flood-tuber`) and cleans up any legacy files from `C:\Program Files\obs-studio`.
 
 ### Option 2: Portable (Manual)
-1.  Download the `FloodTuber-Portable.zip`.
-2.  Extract the contents.
-3.  Copy the `flood-tuber.dll` into your OBS plugins folder (usually `C:\Program Files\obs-studio\obs-plugins\64bit`).
-4.  Copy the `flood-tuber` folder from the `data/obs-plugins` folder to the OBS data directory (usually `C:\Program Files\obs-studio\data\obs-plugins\flood-tuber`).
-5.  Restart OBS Studio.
+1.  Download `FloodTuber-Portable-v1.2.0.zip`.
+2.  Extract the `flood-tuber` folder from the archive directly into `C:\ProgramData\obs-studio\plugins\` (so that `C:\ProgramData\obs-studio\plugins\flood-tuber\flood-tuber.dll` and `C:\ProgramData\obs-studio\plugins\flood-tuber\data` exist).
+3.  *(If upgrading manually from v1.1.0 or older)* Delete the old `C:\Program Files\obs-studio\obs-plugins\64bit\flood-tuber.dll` and `C:\Program Files\obs-studio\data\obs-plugins\flood-tuber` folder so OBS does not load the outdated version.
+4.  Restart OBS Studio.
 
 ## Usage
 
@@ -66,7 +69,7 @@ I offer two installation methods:
 > **⚠️ IMPORTANT: STRICT FILE NAMING**
 > The plugin does NOT save custom file names to the settings. It strictly looks for exact filenames in the folder. **You MUST name your image files exactly as shown below**, otherwise the "Load & Apply" button will not work, and the plugin will "forget" your files when switching avatars.
 
-1.  Click **"Open Avatars Folder"** in the properties.
+1.  Click **"Open Avatars Folder"** in the properties (located at `C:\ProgramData\obs-studio\plugins\flood-tuber\data\avatars`).
 2.  Create a new folder with your avatar's name (e.g., `My Cool Avatar`).
 3.  Place your images inside and rename them exactly like this:
     *   `idle.png`

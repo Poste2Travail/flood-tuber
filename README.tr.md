@@ -30,24 +30,27 @@ Flood Tuber'ın en son sürümünü şuradan indirebilirsiniz:
 *   **[Resmi OBS Kaynaklar Sayfası](https://obsproject.com/forum/resources/flood-tuber-native-pngtuber-plugin.2336/)**
 *   **[GitHub Sürümler (Releases)](https://github.com/justflood/flood-tuber/releases/latest)** (Önerilen)
 
+> **📌 OBS Studio Sürüm Uyumluluğu:**
+> *   **OBS Studio 33.0.0 ve üzeri:** **v1.2.0+** (en güncel sürümü) indirin.
+> *   **OBS Studio 32.x ve daha eski sürümler:** Lütfen **[v1.1.0](https://github.com/justflood/flood-tuber/releases/tag/v1.1.0)** sürümünü kullanın.
+
 İki kurulum yöntemi vardır:
 
 ### Seçenek 1: Yükleyici (Önerilen)
-1.  `FloodTuber-Installer-x.x.x.exe` dosyasını indirin.
+1.  `FloodTuber-Installer-1.2.0.exe` dosyasını indirin.
 2.  Yükleyiciyi çalıştırın.
     > **⚠️ "Windows kişisel bilgisayarınızı korudu" uyarısı hakkında not:**
     > Bu açık kaynaklı bir proje olduğundan, pahalı bir kod imzalama sertifikam bulunmamaktadır. Yükleyiciyi çalıştırdığınızda, Windows SmartScreen "Bilinmeyen Yayıncı" uyarısı gösterebilir.
     > Bu, açık kaynaklı yazılımlar için tamamen normaldir. Devam etmek için:
     > *   **"Ek Bilgi" (More Info)** seçeneğine tıklayın.
     > *   **"Yine de Çalıştır" (Run Anyway)** butonuna basın.
-3.  Kurulum sihirbazındaki adımları takip edin.
+3.  Kurulum sihirbazındaki adımları takip edin. Yükleyici eklentiyi otomatik olarak standart OBS eklenti dizinine (`C:\ProgramData\obs-studio\plugins\flood-tuber`) kurar ve `C:\Program Files\obs-studio` altındaki eski sürüm kalıntılarını temizler.
 
 ### Seçenek 2: Taşınabilir / Zip (Manuel)
-1.  `FloodTuber-Portable-vx.x.x.zip` dosyasını indirin.
-2.  Dosyaları bir klasöre çıkarın.
-3.  `flood-tuber.dll` dosyasını OBS eklenti klasörünüze kopyalayın (genellikle `C:\Program Files\obs-studio\obs-plugins\64bit`).
-4.  `data/obs-plugins` klasörü içindeki `flood-tuber` klasörünü OBS veri dizinine kopyalayın (genellikle `C:\Program Files\obs-studio\data\obs-plugins\flood-tuber`).
-5.  OBS Studio'yu yeniden başlatın.
+1.  `FloodTuber-Portable-v1.2.0.zip` dosyasını indirin.
+2.  Arşiv içindeki `flood-tuber` klasörünü doğrudan `C:\ProgramData\obs-studio\plugins\` dizinine çıkarın (`C:\ProgramData\obs-studio\plugins\flood-tuber\flood-tuber.dll` ve `C:\ProgramData\obs-studio\plugins\flood-tuber\data` oluşacak şekilde).
+3.  *(Eğer v1.1.0 veya daha eski bir sürümden manuel güncelliyorsanız)* Eski `C:\Program Files\obs-studio\obs-plugins\64bit\flood-tuber.dll` dosyasını ve `C:\Program Files\obs-studio\data\obs-plugins\flood-tuber` klasörünü silin.
+4.  OBS Studio'yu yeniden başlatın.
 
 ## Kullanım
 
@@ -66,7 +69,7 @@ Flood Tuber'ın en son sürümünü şuradan indirebilirsiniz:
 > **⚠️ ÖNEMLİ: KESİN DOSYA İSİMLENDİRMESİ**
 > Eklenti, sizin verdiğiniz özel dosya isimlerini ayarlara kaydetmez. Klasör içinde tam olarak aradığı sabit isimleri bulmak zorundadır. **Resim dosyalarınızı kesinlikle aşağıda gösterildiği gibi isimlendirmelisiniz**, aksi takdirde "Load & Apply" butonu çalışmaz ve eklenti başka bir avatara geçip döndüğünüzde dosyalarınızı "unutur".
 
-1.  Özelliklerdeki **"Open Avatars Folder"** (Avatar Klasörünü Aç) butonuna tıklayın.
+1.  Özelliklerdeki **"Open Avatars Folder"** (Avatar Klasörünü Aç) butonuna tıklayın (`C:\ProgramData\obs-studio\plugins\flood-tuber\data\avatars` konumundadır).
 2.  Avatarınızın ismiyle yeni bir klasör oluşturun (örn: `Benim Havali Avatarim`).
 3.  Görsellerinizi içine atın ve isimlerini tam olarak şu şekilde değiştirin:
     *   `idle.png`
