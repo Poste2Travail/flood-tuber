@@ -1,7 +1,15 @@
 #include "flood-tuber.h"
 #include "flood-tuber-props.h"
 #include <util/dstr.h>
+#include <util/platform.h>
 #include <math.h>
+
+#ifdef _WIN32
+#define STRCMPI _strcmpi
+#else
+#include <strings.h>
+#define STRCMPI strcasecmp
+#endif
 
 
 // Validate file headers to prevent crashes (e.g. renamed .txt files)
@@ -43,7 +51,7 @@ static bool check_file_signature(const char *path) {
     // Allow others if we are brave, but for GIF specifically we MUST validate 
     // because OBS crashes on corrupt GIFs.
     const char *ext = strrchr(path, '.');
-    if (ext && _strcmpi(ext, ".gif") == 0) {
+    if (ext && STRCMPI(ext, ".gif") == 0) {
         return false; // Extension says GIF but header doesn't match
     }
 
@@ -61,7 +69,7 @@ static void update_image(FloodImage *image, const char *path)
             blog(LOG_WARNING, "Invalid file signature (corrupt or fake file?): %s", path);
         } else {
             const char *ext = strrchr(path, '.');
-            bool is_webp = (ext && (_strcmpi(ext, ".webp") == 0));
+            bool is_webp = (ext && (STRCMPI(ext, ".webp") == 0));
             
             if (is_webp) {
                 image->type = FloodImage::CUSTOM_WEBP;
@@ -72,7 +80,7 @@ static void update_image(FloodImage *image, const char *path)
                 } else {
                      blog(LOG_INFO, "Loaded WebP: %s", path);
                 }
-            } else if (ext && (_strcmpi(ext, ".apng") == 0 || _strcmpi(ext, ".png") == 0)) {
+            } else if (ext && (STRCMPI(ext, ".apng") == 0 || STRCMPI(ext, ".png") == 0)) {
                 // Check if it's an animated PNG
                 APNGDecoder *temp_decoder = new APNGDecoder();
                 if (temp_decoder->Load(path) && temp_decoder->IsAnimated()) {
@@ -100,6 +108,43 @@ static void update_image(FloodImage *image, const char *path)
     }
     image->anim_time_ns = 0;
 	obs_leave_graphics();
+}
+
+// Loads an image from a setting key; if the stored path was a built-in avatar
+// in a legacy installation directory that no longer exists, resolves it via obs_module_file.
+static void update_image_setting(FloodImage *image, obs_data_t *settings, const char *setting_key)
+{
+	const char *path = obs_data_get_string(settings, setting_key);
+	if (path && *path && !os_file_exists(path)) {
+		struct dstr norm = {0};
+		dstr_copy(&norm, path);
+		dstr_replace(&norm, "\\", "/");
+
+		const char *marker = "/avatars/";
+		const char *found = NULL;
+		const char *search = norm.array;
+		while ((search = strstr(search, marker)) != NULL) {
+			found = search;
+			search += strlen(marker);
+		}
+
+		if (found) {
+			const char *rel_path = found + 1; // "avatars/<AvatarName>/<file>"
+			char *new_path = obs_module_file(rel_path);
+			if (new_path && os_file_exists(new_path)) {
+				BLOG(LOG_INFO, "Migrated legacy avatar path '%s' -> '%s'", path, new_path);
+				obs_data_set_string(settings, setting_key, new_path);
+				update_image(image, new_path);
+				bfree(new_path);
+				dstr_free(&norm);
+				return;
+			}
+			if (new_path)
+				bfree(new_path);
+		}
+		dstr_free(&norm);
+	}
+	update_image(image, path);
 }
 
 static void flood_image_tick(FloodImage *img, uint64_t elapsed_ns) {
@@ -159,6 +204,7 @@ static uint32_t flood_image_get_height(FloodImage *img) {
 static void audio_callback(void *data_ptr, obs_source_t *source, const struct audio_data *audio_data, bool muted)
 {
 	struct flood_tuber_data *data = (struct flood_tuber_data *)data_ptr;
+	UNUSED_PARAMETER(source);
 	if (muted) {
 		data->current_db = -100.0f;
 		return;
@@ -233,15 +279,15 @@ static void flood_tuber_update(void *data_ptr, obs_data_t *settings)
 		data->audio_source = NULL;
 	}
 
-	update_image(&data->image_idle, obs_data_get_string(settings, "path_idle"));
-	update_image(&data->image_blink, obs_data_get_string(settings, "path_blink"));
-	update_image(&data->image_action, obs_data_get_string(settings, "path_action"));
-	update_image(&data->image_talking_1, obs_data_get_string(settings, "path_talk_1"));
-	update_image(&data->image_talking_2, obs_data_get_string(settings, "path_talk_2"));
-	update_image(&data->image_talking_3, obs_data_get_string(settings, "path_talk_3"));
-	update_image(&data->image_talking_1_blink, obs_data_get_string(settings, "path_talk_1_blink"));
-	update_image(&data->image_talking_2_blink, obs_data_get_string(settings, "path_talk_2_blink"));
-	update_image(&data->image_talking_3_blink, obs_data_get_string(settings, "path_talk_3_blink"));
+	update_image_setting(&data->image_idle, settings, "path_idle");
+	update_image_setting(&data->image_blink, settings, "path_blink");
+	update_image_setting(&data->image_action, settings, "path_action");
+	update_image_setting(&data->image_talking_1, settings, "path_talk_1");
+	update_image_setting(&data->image_talking_2, settings, "path_talk_2");
+	update_image_setting(&data->image_talking_3, settings, "path_talk_3");
+	update_image_setting(&data->image_talking_1_blink, settings, "path_talk_1_blink");
+	update_image_setting(&data->image_talking_2_blink, settings, "path_talk_2_blink");
+	update_image_setting(&data->image_talking_3_blink, settings, "path_talk_3_blink");
 
 	data->threshold = (float)obs_data_get_double(settings, "threshold");
 	data->release_delay = (float)obs_data_get_int(settings, "release_delay") / 1000.0f; // ms to seconds
@@ -389,6 +435,7 @@ static void flood_tuber_tick(void *data_ptr, float seconds)
 static void flood_tuber_render(void *data_ptr, gs_effect_t *effect)
 {
 	struct flood_tuber_data *data = (struct flood_tuber_data *)data_ptr;
+	UNUSED_PARAMETER(effect);
 	gs_texture_t *tex = flood_image_get_texture(&data->image_idle);
 
 	if (data->current_state == AvatarState::ACTION && flood_image_get_texture(&data->image_action)) {
@@ -470,6 +517,7 @@ static uint32_t flood_tuber_get_height(void *data_ptr)
 }
 static const char *flood_tuber_get_name(void *unused)
 {
+	UNUSED_PARAMETER(unused);
 	return "Flood Tuber Avatar";
 }
 

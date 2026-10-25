@@ -659,26 +659,26 @@ obs_properties_t *flood_tuber_properties(void *data)
 		}
 	}
 
-	obs_properties_add_button(lib, "load_avatar_btn",
-		obs_module_text("load_avatar_btn"), load_avatar);
-	obs_properties_add_button(lib, "save_settings_btn",
-		obs_module_text("save_settings_btn"), save_settings_to_avatar);
+	obs_properties_add_button2(lib, "load_avatar_btn",
+		obs_module_text("load_avatar_btn"), load_avatar, data);
+	obs_properties_add_button2(lib, "save_settings_btn",
+		obs_module_text("save_settings_btn"), save_settings_to_avatar, data);
 
 	// Custom avatars folder picker with live-refresh callback
 	obs_properties_add_text(lib, "hint_custom_folder", NULL, OBS_TEXT_INFO);
 	obs_property_t *folder_prop = obs_properties_add_path(lib, "custom_avatars_path",
 		obs_module_text("custom_avatars_path"), OBS_PATH_DIRECTORY, NULL, NULL);
 	obs_property_set_modified_callback(folder_prop, on_custom_path_changed);
-	obs_properties_add_button(lib, "clear_custom_folder_btn",
-		obs_module_text("clear_custom_folder"), clear_custom_folder);
+	obs_properties_add_button2(lib, "clear_custom_folder_btn",
+		obs_module_text("clear_custom_folder"), clear_custom_folder, data);
 
 	// Save As New Avatar
 	obs_properties_add_text(lib, "new_avatar_name",
 		obs_module_text("new_avatar_name"), OBS_TEXT_DEFAULT);
-	obs_properties_add_button(lib, "save_as_new_btn",
-		obs_module_text("save_as_new_btn"), save_as_new_avatar);
-	obs_properties_add_button(lib, "open_folder_btn",
-		obs_module_text("open_folder_btn"), open_library_folder);
+	obs_properties_add_button2(lib, "save_as_new_btn",
+		obs_module_text("save_as_new_btn"), save_as_new_avatar, data);
+	obs_properties_add_button2(lib, "open_folder_btn",
+		obs_module_text("open_folder_btn"), open_library_folder, data);
 
 	// ── 2. Avatar Images ───────────────────────────────────────────────────
 	obs_properties_t *img = obs_properties_create();
@@ -691,27 +691,27 @@ obs_properties_t *flood_tuber_properties(void *data)
 
 	// Base states
 	add_file_prop(img, "path_idle",   obs_module_text("path_idle"),   obs_module_text("path_idle_tooltip"));
-	obs_properties_add_button(img, "clear_idle",   clear_txt, clear_idle);
+	obs_properties_add_button2(img, "clear_idle",   clear_txt, clear_idle, data);
 	add_file_prop(img, "path_blink",  obs_module_text("path_blink"),  obs_module_text("path_blink_tooltip"));
-	obs_properties_add_button(img, "clear_blink",  clear_txt, clear_blink);
+	obs_properties_add_button2(img, "clear_blink",  clear_txt, clear_blink, data);
 	add_file_prop(img, "path_action", obs_module_text("path_action"), obs_module_text("path_action_tooltip"));
-	obs_properties_add_button(img, "clear_action", clear_txt, clear_action);
+	obs_properties_add_button2(img, "clear_action", clear_txt, clear_action, data);
 
 	// Talking frames
 	add_file_prop(img, "path_talk_1",       obs_module_text("path_talk_1"),       obs_module_text("path_talk_1_tooltip"));
-	obs_properties_add_button(img, "clear_talk_1",       clear_txt, clear_talk_1);
+	obs_properties_add_button2(img, "clear_talk_1",       clear_txt, clear_talk_1, data);
 	add_file_prop(img, "path_talk_1_blink", obs_module_text("path_talk_1_blink"), obs_module_text("path_talk_1_blink_tooltip"));
-	obs_properties_add_button(img, "clear_talk_1_blink", clear_txt, clear_talk_1_blink);
+	obs_properties_add_button2(img, "clear_talk_1_blink", clear_txt, clear_talk_1_blink, data);
 
 	add_file_prop(img, "path_talk_2",       obs_module_text("path_talk_2"),       obs_module_text("path_talk_2_tooltip"));
-	obs_properties_add_button(img, "clear_talk_2",       clear_txt, clear_talk_2);
+	obs_properties_add_button2(img, "clear_talk_2",       clear_txt, clear_talk_2, data);
 	add_file_prop(img, "path_talk_2_blink", obs_module_text("path_talk_2_blink"), obs_module_text("path_talk_2_blink_tooltip"));
-	obs_properties_add_button(img, "clear_talk_2_blink", clear_txt, clear_talk_2_blink);
+	obs_properties_add_button2(img, "clear_talk_2_blink", clear_txt, clear_talk_2_blink, data);
 
 	add_file_prop(img, "path_talk_3",       obs_module_text("path_talk_3"),       obs_module_text("path_talk_3_tooltip"));
-	obs_properties_add_button(img, "clear_talk_3",       clear_txt, clear_talk_3);
+	obs_properties_add_button2(img, "clear_talk_3",       clear_txt, clear_talk_3, data);
 	add_file_prop(img, "path_talk_3_blink", obs_module_text("path_talk_3_blink"), obs_module_text("path_talk_3_blink_tooltip"));
-	obs_properties_add_button(img, "clear_talk_3_blink", clear_txt, clear_talk_3_blink);
+	obs_properties_add_button2(img, "clear_talk_3_blink", clear_txt, clear_talk_3_blink, data);
 
 	// ── 3. Audio & Trigger ─────────────────────────────────────────────────
 	obs_properties_t *audio = obs_properties_create();
@@ -815,10 +815,10 @@ obs_properties_t *flood_tuber_properties(void *data)
 
 	obs_properties_add_text(about, "about_version", NULL, OBS_TEXT_INFO);
 	obs_properties_add_text(about, "about_author",  NULL, OBS_TEXT_INFO);
-	obs_properties_add_button(about, "about_website_btn",
-		obs_module_text("about_website_btn"), open_website_page);
-	obs_properties_add_button(about, "about_github_btn",
-		obs_module_text("about_github_btn"), open_github_page);
+	obs_properties_add_button2(about, "about_website_btn",
+		obs_module_text("about_website_btn"), open_website_page, data);
+	obs_properties_add_button2(about, "about_github_btn",
+		obs_module_text("about_github_btn"), open_github_page, data);
 
 	return props;
 }
