@@ -1,4 +1,3 @@
-
 build/
 bin/
 lib/
@@ -9,19 +8,16 @@ lib/
 *.ilk
 *.obj
 
-
 .vs/
 *.user
 *.vcxproj
 *.vcxproj.filters
 *.sln
 
-
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
-
 
 .DS_Store
 Thumbs.db
@@ -31,7 +27,10 @@ Thumbs.db
 # Test files
 ovr-test/
 
-docs/
+docs/*
+!docs/release/
+docs/release/release.ps1
 
 .deps/
 build_x64/
+release/
