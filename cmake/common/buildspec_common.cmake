@@ -52,10 +52,18 @@ function(_setup_obs_studio)
     set(_is_fresh --fresh)
   endif()
 
-  # Prevent inner obs-studio from re-running its own buildspec downloader
+  # Prevent inner obs-studio from re-running its own buildspec downloader or 32-bit child builds
   set(_inner_win_buildspec "${dependencies_dir}/${_obs_destination}/cmake/windows/buildspec.cmake")
   if(EXISTS "${_inner_win_buildspec}")
     file(WRITE "${_inner_win_buildspec}" "# Handled by outer plugin buildspec\n")
+  endif()
+  set(_inner_win_arch "${dependencies_dir}/${_obs_destination}/cmake/windows/architecture.cmake")
+  if(EXISTS "${_inner_win_arch}")
+    file(
+      WRITE
+      "${_inner_win_arch}"
+      "include_guard(GLOBAL)\ninclude(compilerconfig)\nset(OBS_PARENT_ARCHITECTURE \${CMAKE_VS_PLATFORM_NAME})\n"
+    )
   endif()
   set(_inner_mac_buildspec "${dependencies_dir}/${_obs_destination}/cmake/macos/buildspec.cmake")
   if(EXISTS "${_inner_mac_buildspec}")
@@ -105,7 +113,8 @@ function(_setup_obs_studio)
   execute_process(
     COMMAND
       "${CMAKE_COMMAND}" -S "${dependencies_dir}/${_obs_destination}" -B "${dependencies_dir}/${_obs_destination}/build_${arch}"
-      -G "${_cmake_generator}" "${_cmake_arch}" ${_cmake_extra} -DOBS_CMAKE_VERSION:STRING=3.0.0 -DENABLE_PLUGINS:BOOL=OFF
+      -G "${_cmake_generator}" "${_cmake_arch}" ${_cmake_extra} -DOBS_CMAKE_VERSION:STRING=3.0.0
+      -DENABLE_PLUGINS:BOOL=OFF -DENABLE_CORE_MODULES:BOOL=OFF
       -DENABLE_FRONTEND:BOOL=OFF -DENABLE_SCRIPTING:BOOL=OFF
       -DOBS_VERSION_OVERRIDE:STRING=${_obs_version} "-DCMAKE_PREFIX_PATH='${CMAKE_PREFIX_PATH}'" ${_is_fresh}
     RESULT_VARIABLE _process_result
