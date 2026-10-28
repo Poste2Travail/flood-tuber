@@ -584,6 +584,7 @@ static void flood_tuber_tick(void *data_ptr, float seconds)
 		if (data->talk_effect == TalkingEffect::BOUNCE) {
 			data->offset_y = -fabsf(sinf(data->timer_effect * 5.0f)) * amp;
 		}
+		}
 		else if (data->talk_effect == TalkingEffect::SHAKE) {
 			data->offset_x = sinf(data->timer_effect * 25.0f) * amp * 0.8f;
 			data->offset_y = cosf(data->timer_effect * 20.0f) * amp * 0.8f;
