@@ -243,16 +243,58 @@ static void *flood_tuber_create(obs_data_t *settings, obs_source_t *source)
 	return data;
 }
 
+static void flood_tuber_remove_audio_capture(struct flood_tuber_data *data)
+{
+    if (!data->audio_source)
+        return;
+ 
+    obs_source_t *source = obs_weak_source_get_source(data->audio_source);
+    if (source) {
+        obs_source_remove_audio_capture_callback(source, audio_callback, data);
+        obs_source_release(source);
+    }
+    obs_weak_source_release(data->audio_source);
+    data->audio_source = nullptr;
+}
+ 
+// The mic source often does not exist yet when this source is created.
+// Keep the selected name and attach the capture once the source appears.
+static void flood_tuber_try_audio_capture(struct flood_tuber_data *data)
+{
+    if (data->audio_source) {
+        obs_source_t *existing = obs_weak_source_get_source(data->audio_source);
+        if (existing) {
+            obs_source_release(existing);
+            return;
+        }
+        obs_weak_source_release(data->audio_source);
+        data->audio_source = nullptr;
+    }
+ 
+    if (!data->audio_source_name[0])
+        return;
+ 
+    uint64_t now = os_gettime_ns();
+    if (now - data->capture_check_time < 3000000000ULL)
+        return;
+    data->capture_check_time = now;
+ 
+    obs_source_t *capture = obs_get_source_by_name(data->audio_source_name);
+    if (!capture)
+        return;
+ 
+    data->audio_source = obs_source_get_weak_source(capture);
+    obs_source_add_audio_capture_callback(capture, audio_callback, data);
+    BLOG(LOG_INFO, "Added audio capture to '%s'", obs_source_get_name(capture));
+    obs_source_release(capture);
+}
 
 // Plugin Cleanup: Frees memory and releases resources
 static void flood_tuber_destroy(void *d)
 {
 	struct flood_tuber_data *data = (struct flood_tuber_data *)d;
 
-	if (data->audio_source) {
-		obs_source_remove_audio_capture_callback(data->audio_source, audio_callback, data);
-		obs_source_release(data->audio_source);
-	}
+	flood_tuber_remove_audio_capture(data);
 	obs_enter_graphics();
 	data->image_idle.Free();
 	data->image_blink.Free();
@@ -317,10 +359,15 @@ static void flood_tuber_update(void *data_ptr, obs_data_t *settings)
 
 	const char *audio_source_name = obs_data_get_string(settings, "audio_source");
 	obs_source_t *new_audio_source = obs_get_source_by_name(audio_source_name);
-	if (new_audio_source) {
-		data->audio_source = new_audio_source;
-		obs_source_add_audio_capture_callback(data->audio_source, audio_callback, data);
-	}
+    if (!audio_source_name || !audio_source_name[0]) {
+        flood_tuber_remove_audio_capture(data);
+        data->audio_source_name[0] = '\0';
+    } else if (strcmp(data->audio_source_name, audio_source_name) != 0) {
+        flood_tuber_remove_audio_capture(data);
+        strncpy(data->audio_source_name, audio_source_name, sizeof(data->audio_source_name) - 1);
+        data->audio_source_name[sizeof(data->audio_source_name) - 1] = '\0';
+        data->capture_check_time = os_gettime_ns() - 3000000000ULL;
+    }
 
 	data->time_until_next_action = data->action_interval_min;
 	data->time_until_next_blink = data->blink_interval_min;
@@ -330,6 +377,8 @@ static void flood_tuber_update(void *data_ptr, obs_data_t *settings)
 static void flood_tuber_tick(void *data_ptr, float seconds)
 {
 	struct flood_tuber_data *data = (struct flood_tuber_data *)data_ptr;
+
+	flood_tuber_try_audio_capture(data);
 
 	// Tick animations for all images
 	// Convert seconds to nanoseconds for flood_image_file_tick
