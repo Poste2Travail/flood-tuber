@@ -86,8 +86,10 @@ struct FloodImage {
 };
 
 struct flood_tuber_data {
-	obs_source_t *source;       // The OBS source instance for this plugin
-	obs_source_t *audio_source; // The external audio source we are monitoring
+	obs_source_t *source;             // The OBS source instance for this plugin
+    obs_weak_source_t *audio_source; // Mic source, resolved by name after startup
+    char audio_source_name[256];
+    uint64_t capture_check_time;
 
 	// -- Image Assets (Using Wrapper) --
 	FloodImage image_idle;
