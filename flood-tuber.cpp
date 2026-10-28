@@ -364,8 +364,11 @@ static void flood_tuber_update(void *data_ptr, obs_data_t *settings)
         data->audio_source_name[0] = '\0';
     } else if (strcmp(data->audio_source_name, audio_source_name) != 0) {
         flood_tuber_remove_audio_capture(data);
-        strncpy(data->audio_source_name, audio_source_name, sizeof(data->audio_source_name) - 1);
-        data->audio_source_name[sizeof(data->audio_source_name) - 1] = '\0';
+        size_t name_len = strlen(audio_source_name);
+        if (name_len >= sizeof(data->audio_source_name))
+            name_len = sizeof(data->audio_source_name) - 1;
+        memcpy(data->audio_source_name, audio_source_name, name_len);
+        data->audio_source_name[name_len] = '\0';
         data->capture_check_time = os_gettime_ns() - 3000000000ULL;
     }
 
