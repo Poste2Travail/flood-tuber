@@ -604,7 +604,7 @@ static void add_file_prop(obs_properties_t *props, const char *name, const char 
 static bool open_github_page(obs_properties_t *props, obs_property_t *p, void *data)
 {
 	(void)props; (void)p; (void)data;
-	os_open_url_or_path("https://floodtechlab.com/floodtuber/");
+	os_open_url_or_path("https://github.com/justflood/flood-tuber");
 	return false;
 }
 
