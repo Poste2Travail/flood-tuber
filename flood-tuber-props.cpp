@@ -157,6 +157,7 @@ void apply_avatar_to_settings(obs_data_t *settings, const char *avatar_name, boo
 // Set plugin defaults on first load
 void flood_tuber_defaults(obs_data_t *settings)
 {
+	obs_data_set_default_string(settings, "audio_source", "");
 	obs_data_set_default_double(settings, "threshold",          -30.0);
 	obs_data_set_default_int(settings,    "release_delay",       200);
 	obs_data_set_default_double(settings, "talking_speed",        0.10);
@@ -722,6 +723,7 @@ obs_properties_t *flood_tuber_properties(void *data)
 
 	obs_property_t *p_src = obs_properties_add_list(audio, "audio_source",
 		obs_module_text("audio_source"), OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
+	obs_property_list_add_string(p_src, "", "");
 	obs_enum_sources(enum_audio_sources, p_src);
 
 	obs_property_t *p_thresh = obs_properties_add_float_slider(audio,
