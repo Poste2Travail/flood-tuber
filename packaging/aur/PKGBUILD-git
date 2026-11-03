@@ -10,13 +10,19 @@ depends=('obs-studio' 'libwebp')
 makedepends=('cmake' 'ninja' 'git' 'simde')
 provides=('obs-plugin-flood-tuber')
 conflicts=('obs-plugin-flood-tuber')
-source=("git+$url.git")
+_branch=test-arch-linux
+source=("git+https://github.com/Poste2Travail/flood-tuber.git#branch=$_branch")
 sha256sums=('SKIP')
 
 pkgver() {
   cd "flood-tuber"
-  git describe --long --tags --abbrev=7 2>/dev/null | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g' ||
-  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short=7 HEAD)"
+  # Fallback is explicit: a pipeline's exit status is sed's, so `git describe ... || printf`
+  # never reached the fallback when the repo has no tags (as on this branch).
+  if desc=$(git describe --long --tags --abbrev=7 2>/dev/null); then
+    printf '%s' "$desc" | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+  else
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short=7 HEAD)"
+  fi
 }
 
 build() {
