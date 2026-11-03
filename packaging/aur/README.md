@@ -7,7 +7,9 @@ This directory contains `PKGBUILD` definitions for Arch Linux, CachyOS, and othe
 - **`PKGBUILD`**: Builds from release tarballs (for tagged releases, e.g. `obs-plugin-flood-tuber`).
 - **`PKGBUILD-git`**: VCS package building from the latest commit of the `test-arch-linux` branch of `Poste2Travail/flood-tuber` (`obs-plugin-flood-tuber-git`). Change `_branch` in the file to build another branch.
 
-> **Note:** `PKGBUILD` downloads the `v$pkgver` tag from `justflood/flood-tuber`. At the time of writing that repo has only `v1.3.0-beta1`, and this branch's `buildspec.json` declares `1.2.0`, so check that `pkgver` matches a real tag before building.
+> **Versions:** `PKGBUILD` builds the upstream pre-release tag `v1.3.0-beta1` (`pkgver=1.3.0_beta1`, the `_` replaces `-` because pacman forbids it). `PKGBUILD-git` uses the same base version, and this branch's `buildspec.json` declares `1.3.0`, which is what CMake embeds as the plugin version.
+>
+> The `sha256sums` of the release tarball is still `SKIP`; fill it in once the tarball can be downloaded.
 
 ## Testing / Building Locally
 

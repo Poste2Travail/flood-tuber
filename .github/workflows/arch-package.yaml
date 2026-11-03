@@ -13,8 +13,12 @@ permissions:
 
 jobs:
   makepkg:
-    name: Build pacman package (PKGBUILD-git)
+    name: Build pacman package (${{ matrix.recipe }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        recipe: [PKGBUILD, PKGBUILD-git]
     container:
       image: archlinux:latest
     steps:
@@ -29,12 +33,13 @@ jobs:
       - name: Build package with makepkg
         env:
           WORKSPACE: ${{ github.workspace }}
+          RECIPE: ${{ matrix.recipe }}
         run: |
           set -euo pipefail
           cp -r "$WORKSPACE/packaging/aur" /home/builder/aur
           chown -R builder:builder /home/builder/aur
           cd /home/builder/aur
-          cp PKGBUILD-git PKGBUILD
+          if [ "$RECIPE" != PKGBUILD ]; then cp "$RECIPE" PKGBUILD; fi
           # -s installs makedepends and depends via pacman, -c cleans up afterwards
           su builder -c "cd /home/builder/aur && makepkg -s --noconfirm --needed -c"
           mkdir -p "$WORKSPACE/out"
@@ -44,6 +49,6 @@ jobs:
       - name: Upload package
         uses: actions/upload-artifact@v5
         with:
-          name: obs-plugin-flood-tuber-git-x86_64
+          name: obs-plugin-flood-tuber-${{ matrix.recipe }}-x86_64
           path: out/*.pkg.tar.zst
           if-no-files-found: error
