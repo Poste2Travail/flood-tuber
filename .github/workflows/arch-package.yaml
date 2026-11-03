@@ -1,0 +1,49 @@
+name: Arch package
+
+on:
+  push:
+    branches: [test-arch-linux]
+    paths:
+      - "packaging/aur/**"
+      - ".github/workflows/arch-package.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  makepkg:
+    name: Build pacman package (PKGBUILD-git)
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Install git and base tooling
+        run: |
+          pacman -Syu --noconfirm git base-devel sudo
+          useradd -m builder
+          echo 'builder ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/builder
+
+      - uses: actions/checkout@v5
+
+      - name: Build package with makepkg
+        env:
+          WORKSPACE: ${{ github.workspace }}
+        run: |
+          set -euo pipefail
+          cp -r "$WORKSPACE/packaging/aur" /home/builder/aur
+          chown -R builder:builder /home/builder/aur
+          cd /home/builder/aur
+          cp PKGBUILD-git PKGBUILD
+          # -s installs makedepends and depends via pacman, -c cleans up afterwards
+          su builder -c "cd /home/builder/aur && makepkg -s --noconfirm --needed -c"
+          mkdir -p "$WORKSPACE/out"
+          cp /home/builder/aur/*.pkg.tar.zst "$WORKSPACE/out/"
+          ls -l "$WORKSPACE/out"
+
+      - name: Upload package
+        uses: actions/upload-artifact@v5
+        with:
+          name: obs-plugin-flood-tuber-git-x86_64
+          path: out/*.pkg.tar.zst
+          if-no-files-found: error
